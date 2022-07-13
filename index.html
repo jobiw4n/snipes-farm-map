@@ -62,7 +62,7 @@
       const popup = new mapboxgl.Popup({ offset: [0, -15] })
         .setLngLat(event.lngLat)
         .setHTML(
-          `<h3>${feature.properties.name}</h3><p>${acres} Acres</p>`
+          `<h3>${feature.properties.name}</h3><p>${feature.properties.description} Acres</p>`
           //`h3>Success!</h3>`
         )
         .addTo(map);
