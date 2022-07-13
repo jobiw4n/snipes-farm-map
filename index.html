@@ -52,8 +52,8 @@
           and properties, and add it to the map.
         */
       
-      const area = turf.area(feature.geometry)
-      const acres = Math.round((area/43560 + Number.EPSILON) * 100) / 100
+      const area = turf.area(feature.geometry)/43560
+      const acres = Math.round((area + Number.EPSILON) * 100) / 100
       const popup = new mapboxgl.Popup({ offset: [0, -15] })
         .setLngLat(event.lngLat)
         .setHTML(
