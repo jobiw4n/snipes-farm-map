@@ -21,6 +21,7 @@
   </head>
   <body>
     <div id='map'></div>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script>
     // The value for 'accessToken' begins with 'pk...'
     mapboxgl.accessToken = 'pk.eyJ1Ijoiam9iaXc0biIsImEiOiJjbDVqcGtibjQwMmZwM2ttbGZ3ZWpvdGE2In0.vIbLaKKHOgFN1lkKGBF0-g'; 
@@ -50,10 +51,12 @@
           Create a popup, specify its options 
           and properties, and add it to the map.
         */
+      
+      const area = turf.area(feature.geometry)
       const popup = new mapboxgl.Popup({ offset: [0, -15] })
         .setLngLat(event.lngLat)
         .setHTML(
-          `<h3>${feature.properties.name}</h3><p>${feature.properties.name}</p>`
+          `<h3>${feature.properties.name}</h3><p>${area}</p>`
           //`h3>Success!</h3>`
         )
         .addTo(map);
