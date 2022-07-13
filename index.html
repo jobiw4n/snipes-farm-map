@@ -53,10 +53,11 @@
         */
       
       const area = turf.area(feature.geometry)
+      const acres = Math.round((area/43560 + Number.EPSILON) * 100) / 100
       const popup = new mapboxgl.Popup({ offset: [0, -15] })
         .setLngLat(event.lngLat)
         .setHTML(
-          `<h3>${feature.properties.name}</h3><p>${area}</p>`
+          `<h3>${feature.properties.name}</h3><p>${area} Acres</p>`
           //`h3>Success!</h3>`
         )
         .addTo(map);
