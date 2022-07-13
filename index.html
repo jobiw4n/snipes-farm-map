@@ -51,10 +51,10 @@
           and properties, and add it to the map.
         */
       const popup = new mapboxgl.Popup({ offset: [0, -15] })
-        .setLngLat(feature.geometry.coordinates)
+        .setLngLat(event.lngLat)
         .setHTML(
-          //`<h3>${feature.properties.name}</h3><p>${feature.properties.name}</p>`
-          `<h3>Success!</h3>`
+          `<h3>${feature.properties.name}</h3><p>${feature.properties.name}</p>`
+          //`h3>Success!</h3>`
         )
         .addTo(map);
     });
