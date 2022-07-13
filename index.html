@@ -55,8 +55,10 @@
       const area = turf.area(feature.geometry)/43560
       const acres = Math.round(area * 100) / 100
       var html = `<h3>${feature.properties.name}</h3><p>${acres} Acres</p>`
+      var pos = html.search("Acres");
+      
       if(feature.properties.description){
-        html += `<p>(${feature.properties.description})</p>`
+        html = html.slice(0,pos)+`Acres<br>(${feature.properties.description})</p>`
       }
       
       const popup = new mapboxgl.Popup({ offset: [0, -15] })
