@@ -39,7 +39,7 @@
     map.on('click', (event) => {
       // If the user clicked on one of your markers, get its information.
       const features = map.queryRenderedFeatures(event.point, {
-        layers: ['snipes-farm-fields'] // replace with your layer name
+        layers: ['Snipes_Farm_Fields'] // replace with your layer name
       });
       if (!features.length) {
         return;
