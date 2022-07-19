@@ -5,6 +5,7 @@
     <title>Snipes Farm - Points of Interest</title>
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
     <style>
       body { 
@@ -35,13 +36,13 @@
       // Replace YOUR_STYLE_URL with your style URL.
       style: 'mapbox://styles/jobiw4n/cl5jrz06w003015qxhv6lpc2p', 
       center: [-74.797279,40.201035],
-      zoom: 16
+      zoom: 15.9
     });
 
     const popup = new mapboxgl.Popup({
-closeButton: false,
-closeOnClick: false
-});
+      closeButton: false,
+      closeOnClick: false
+    });
 
         /* 
     Add an event listener that runs
@@ -90,9 +91,9 @@ closeOnClick: false
     // Ensure that if the map is zoomed out such that multiple
     // copies of the feature are visible, the popup appears
     // over the copy being pointed to.
-    // while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-    // coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-    // }
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
     
     // Populate the popup and set its coordinates
     // based on the feature found.
@@ -108,5 +109,6 @@ closeOnClick: false
     });
 
     </script>
+        <script src='markers.js'></script>
   </body>
 </html>
