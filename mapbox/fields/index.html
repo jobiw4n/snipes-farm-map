@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <title>Snipes Farm - Fields</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+      body { 
+        margin: 0; 
+        padding: 0; 
+      }
+      #map { 
+        position: absolute; 
+        top:75px;
+        bottom: 0; 
+        width: 100%; 
+      }
+      .mapboxgl-popup {
+        max-width: 400px;
+        font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      }
+      .marker {
+        background-image: url('mapbox-icon.png');
+        background-size: cover;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div><h1>Snipes Farm & Recreation Center - Field Use & Acreage</h1></div>
+    <div id='map'></div>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script>
+    // The value for 'accessToken' begins with 'pk...'
+    mapboxgl.accessToken = 'pk.eyJ1Ijoiam9iaXc0biIsImEiOiJjbDVqcGtibjQwMmZwM2ttbGZ3ZWpvdGE2In0.vIbLaKKHOgFN1lkKGBF0-g'; 
+    const map = new mapboxgl.Map({
+      container: 'map',
+      // Replace YOUR_STYLE_URL with your style URL.
+      style: 'mapbox://styles/jobiw4n/cl5jrz06w003015qxhv6lpc2p', 
+      center: [-74.797279,40.201035],
+      zoom: 15.8,
+      dragPan:false,
+      scrollZoom:false,
+      tapZoom:false
+
+    });
+    map.touchZoomRotate.disableRotation();
+    map.doubleClickZoom.disable();
+    map.dragRotate.disable();
+
+
+    const popup = new mapboxgl.Popup({
+      closeButton: false,
+      closeOnClick: false
+    });
+
+    var clickedPopup = new mapboxgl.Popup({ 
+      offset: [0, -5] 
+    })
+
+        /* 
+    Add an event listener that runs
+      when a user clicks on the map element.
+    */
+    map.on('click', (event) => {
+      // If the user clicked on one of your markers, get its information.
+      const features = map.queryRenderedFeatures(event.point, {
+        layers: ['snipes-farm-fields'] // replace with your layer name
+      });
+      if (!features.length) {
+        return;
+      }
+      const feature = features[0];
+
+            /* 
+          Create a popup, specify its options 
+          and properties, and add it to the map.
+        */
+      
+      const area = turf.area(feature.geometry)/43560
+      const acres = Math.round(area * 100) / 100
+      var html = `<h3>${feature.properties.name}</h3><p>${acres} Acres</p>`
+      var pos = html.search("Acres");
+      
+      if(feature.properties.description){
+        html = html.slice(0,pos)+`Acres<br>(${feature.properties.description})</p>`
+      }
+      
+      clickedPopup.setLngLat(event.lngLat)
+        .setHTML(html)
+        .addTo(map);
+
+        popup.remove()
+    });
+
+    map.on('mousemove', 'snipes-farm-fields', (e) => {
+      var clickedElement = clickedPopup.getElement()
+
+
+      try{
+              if(clickedElement.div){
+       // console.log(Object.keys( clickedElement)  )
+       console.log(clickedElement)
+      }
+      } catch {
+
+      }
+
+      //<div class="mapboxgl-popup-content"><h3>Long Pasture</h3><p>0.2 Acres</p><button class="mapboxgl-popup-close-button" type="button" aria-label="Close popup" aria-hidden="true">×</button></div>
+
+
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = 'pointer';
+    
+    // Copy coordinates array.
+    const coordinates = e.features[0].geometry.coordinates.slice();
+    const description = e.features[0].properties.description;
+    
+    // Ensure that if the map is zoomed out such that multiple
+    // copies of the feature are visible, the popup appears
+    // over the copy being pointed to.
+    while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+    coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+    }
+    
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    var html = `<h3>${e.features[0].properties.name}</h3>`
+    //console.log(html)
+
+    popup.setLngLat(e.lngLat).setHTML(html).addTo(map);
+    });
+
+
+    map.on('mouseleave', 'snipes-farm-fields', () => {
+      map.getCanvas().style.cursor = '';
+      popup.remove();
+      
+    });
+    map.on('load', () => {
+      
+      var geojson = {
+        'type': 'geojson',
+        'data': {
+            'type': 'FeatureCollection',
+            'features': [
+                {
+                    'type': 'Feature',
+                    'properties': {
+                        'title': 'Bee Hives',
+                        'description':
+                            'This is where the bees make Honey!',
+                        'imageLink':'https://ourdailyhomestead.com/wp-content/uploads/2020/06/how-to-start-a-beehive-with-wild-bees-1024x683.jpg'
+                    },
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [-74.7982367, 40.1994422]
+                    }
+                },
+                {
+                    'type': 'Feature',
+                    'properties': {
+                        'description':
+                            '<strong>Mad Men Season Five Finale Watch Party</strong><p>Head to Lounge 201 (201 Massachusetts Avenue NE) Sunday for a Mad Men Season Five Finale Watch Party, complete with 60s costume contest, Mad Men trivia, and retro food and drink. 8:00-11:00 p.m. $10 general admission, $20 admission and two hour open bar.</p>'
+                    },
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [-74.796837, 40.2004326]
+                    }
+                }
+            ]
+        }
+    }
+    map.addSource('places', geojson);
+    // Add a layer showing the places.
+    // map.addLayer({
+    //     'id': 'places',
+    //     'type': 'circle',
+    //     'source': 'places',
+    //     'paint': {
+    //         'circle-color': '#4264fb',
+    //         'circle-radius': 15,
+    //         'circle-stroke-width': 2,
+    //         'circle-stroke-color': '#ffffff'
+    //     }
+    // });
+    // for (const feature of geojson.data.features) {
+    //   // create a HTML element for each feature
+    //   const el = document.createElement('div');
+    //   el.className = 'marker';
+    //   console.log('marker')
+
+    //   // make a marker for each feature and add to the map
+    //   new mapboxgl.Marker(el).setLngLat(feature.geometry.coordinates).addTo(map);
+    // }
+    
+
+    // Create a popup, but don't add it to the map yet.
+    var placePopup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });
+
+    map.on('mouseenter', 'places', (e) => {
+        popup.remove();
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+
+        // Copy coordinates array.
+        const coordinates = e.features[0].geometry.coordinates.slice();
+        const title = `<h3>${e.features[0].properties.title}</h3>`;
+        const image = `<img src='${e.features[0].properties.imageLink}'></img>`
+        const description = `<p>${e.features[0].properties.description}</p>`;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        placePopup.setLngLat(coordinates).setHTML(title).addTo(map);
+    });
+
+    map.on('mouseleave', 'places', () => {
+        map.getCanvas().style.cursor = '';
+        placePopup.remove();
+    });
+
+//     map.on('click', (event) => {
+//         placePopup.remove()
+//         // If the user clicked on one of your markers, get its information.
+//         const features = map.queryRenderedFeatures(event.point, {
+//           layers: ['places'] // replace with your layer name
+//         });
+//         if (!features.length) {
+//           return;
+//         }
+//       const feature = features[0];
+
+//             /* 
+//           Create a popup, specify its options 
+//           and properties, and add it to the map.
+//         */
+
+//           const title = `<h3>${feature.properties.title}</h3>`;
+//           const image = `<div style='text-align:center'><img width=150 src='${feature.properties.imageLink}'></img><div>`
+//           const description = `<p>${feature.properties.description}</p>`;
+      
+//       var clickedPlacePopup = new mapboxgl.Popup({ offset: [0, -5] })
+//         .setLngLat(event.lngLat)
+//         .setHTML(title+image+description)
+//         .addTo(map);
+
+//         popup.remove()
+//     })
+});
+
+    
+
+    </script>
+        
+  </body>
+</html>
