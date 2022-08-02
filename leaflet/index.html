@@ -46,38 +46,79 @@
         // }
 
         // map.on('click', onMapClick);
-  
-        var data = [
-                {
-
-                    'properties': {
-                        'title': 'Office',
-                        'description':
-                            'This is where the bees make Honey!',
-                        'imageLink':'https://ourdailyhomestead.com/wp-content/uploads/2020/06/how-to-start-a-beehive-with-wild-bees-1024x683.jpg'
-                    },
-                    'geometry': {
-                        'coordinates': [40.198795, -74.796495]
-                    }
-                },
-                {
-                    'properties': {
-                        'title': 'Big Red Barn',
-                        'imageLink': '',
-                        'description':
-                            '<strong>Mad Men Season Five Finale Watch Party</strong><p>Head to Lounge 201 (201 Massachusetts Avenue NE) Sunday for a Mad Men Season Five Finale Watch Party, complete with 60s costume contest, Mad Men trivia, and retro food and drink. 8:00-11:00 p.m. $10 general admission, $20 admission and two hour open bar.</p>'
-                    },
-                    'geometry': {
-                        'coordinates': [40.199353, -74.797513]
-                    }
-                }
-            ]
         
-        for (var i=0;i<data.length;i++){
+        // var data = [
+                // {
+
+                //     'properties': {
+                //         'title': 'Offfice',
+                //         'description':
+                //             'This is where the bees make Honey!',
+                //         'imageLink':'https://ourdailyhomestead.com/wp-content/uploads/2020/06/how-to-start-a-beehive-with-wild-bees-1024x683.jpg'
+                //     },
+                //     'geometry': {
+                //         'coordinates': [40.198795, -74.796495]
+                //     }
+                // },
+        //         {
+        //             'properties': {
+        //                 'title': 'Big Red Barn',
+        //                 'imageLink': '',
+        //                 'description':
+        //                     '<strong>Mad Men Season Five Finale Watch Party</strong><p>Head to Lounge 201 (201 Massachusetts Avenue NE) Sunday for a Mad Men Season Five Finale Watch Party, complete with 60s costume contest, Mad Men trivia, and retro food and drink. 8:00-11:00 p.m. $10 general admission, $20 admission and two hour open bar.</p>'
+        //             },
+        //             'geometry': {
+        //                 'coordinates': [40.199353, -74.797513]
+        //             }
+        //         }
+        //     ]
+  
+
+        
+
+        //function getLocationData(){
+            var apiUrl = 'https://script.google.com/macros/s/AKfycbzek3Z1iuBYBzWG9aigJBAqJblw8KmC1hjxi2w0mjV8oHzpykJnLix-MXMcUUCqZ3_YQA/exec'
+            fetch(apiUrl)
+            .then(response => {
+                // indicates whether the response is successful (status code 200-299) or not
+                if (!response.ok) {
+                throw new Error(`Request failed with status ${reponse.status}`)
+                }
+                return response.json()
+            })
+            .then(resData => {
+                console.log(resData)
+                var data=[]
+                for(var i =1;i<resData.length;i++){
+                    data.push({
+                    'properties': {
+                        'title': resData[i][0],
+                        'description':
+                        resData[i][1],
+                        iconSize:resData[i][4],
+                        'imageLink':resData[i][5],
+                        moreInfoText:resData[i][6],
+                        moreInfoUrl:resData[i][7]
+                    },
+                    'geometry': {
+                        'coordinates': [resData[i][2], resData[i][3]]
+                    }
+                    })
+                }
+                return data
+
+            }).then(data=>{
+                for (var i=0;i<data.length;i++){
+                    var iconSize = [60,60]
+                    if(data[i].properties.iconSize == 'small'){
+                        iconSize = [40,40]
+                    } else if (data[i].properties.iconSize == 'large'){
+                        iconSize = [100,100]
+                    }
             
             var icon = L.icon({
                 iconUrl: 'clear.png',
-                iconSize: [60, 60],
+                iconSize,
             //  iconAnchor: [22, 94],
                 popupAnchor: [0, -25],
                 
@@ -100,6 +141,8 @@
 
             marker.bindPopup(html)
         }
+            })
+            .catch(error => console.log(error))
 
         
 
