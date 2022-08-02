@@ -42,7 +42,8 @@
         L.imageOverlay(imageUrl, imageBounds).addTo(map);
        
         function onMapClick(e) {
-            alert("You clicked the map at " + e.latlng);
+            //alert("You clicked the map at " + e.latlng);
+            console.log(e.altkey)
         }
 
         map.on('click', onMapClick);
