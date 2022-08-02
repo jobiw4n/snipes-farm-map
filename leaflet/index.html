@@ -30,7 +30,7 @@
 
         }).setView([40.199244, -74.796412], 18.9);
 
-
+        // show real map behind image
         // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         //     maxZoom: 20,
         //     attribution: '© OpenStreetMap'
@@ -41,43 +41,13 @@
         imageBounds = [[40.197903, -74.79843], [40.20061655, -74.7943]];
         L.imageOverlay(imageUrl, imageBounds).addTo(map);
        
-        // function onMapClick(e) {
-        //     alert("You clicked the map at " + e.latlng);
-        // }
+        function onMapClick(e) {
+            alert("You clicked the map at " + e.latlng);
+        }
 
-        // map.on('click', onMapClick);
+        map.on('click', onMapClick);
         
-        // var data = [
-                // {
-
-                //     'properties': {
-                //         'title': 'Offfice',
-                //         'description':
-                //             'This is where the bees make Honey!',
-                //         'imageLink':'https://ourdailyhomestead.com/wp-content/uploads/2020/06/how-to-start-a-beehive-with-wild-bees-1024x683.jpg'
-                //     },
-                //     'geometry': {
-                //         'coordinates': [40.198795, -74.796495]
-                //     }
-                // },
-        //         {
-        //             'properties': {
-        //                 'title': 'Big Red Barn',
-        //                 'imageLink': '',
-        //                 'description':
-        //                     '<strong>Mad Men Season Five Finale Watch Party</strong><p>Head to Lounge 201 (201 Massachusetts Avenue NE) Sunday for a Mad Men Season Five Finale Watch Party, complete with 60s costume contest, Mad Men trivia, and retro food and drink. 8:00-11:00 p.m. $10 general admission, $20 admission and two hour open bar.</p>'
-        //             },
-        //             'geometry': {
-        //                 'coordinates': [40.199353, -74.797513]
-        //             }
-        //         }
-        //     ]
-  
-
-        
-
-        //function getLocationData(){
-            var apiUrl = 'https://script.google.com/macros/s/AKfycbzek3Z1iuBYBzWG9aigJBAqJblw8KmC1hjxi2w0mjV8oHzpykJnLix-MXMcUUCqZ3_YQA/exec'
+             var apiUrl = 'https://script.google.com/macros/s/AKfycbzek3Z1iuBYBzWG9aigJBAqJblw8KmC1hjxi2w0mjV8oHzpykJnLix-MXMcUUCqZ3_YQA/exec'
             fetch(apiUrl)
             .then(response => {
                 // indicates whether the response is successful (status code 200-299) or not
