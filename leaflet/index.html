@@ -43,7 +43,10 @@
        
         function onMapClick(e) {
             //alert("You clicked the map at " + e.latlng);
-            console.log(e.altkey)
+            if(e.originalEvent.altKey){
+                navigator.clipboard.writeText([e.latlng.lat,e.latlng.lng])
+            }
+
         }
 
         map.on('click', onMapClick);
