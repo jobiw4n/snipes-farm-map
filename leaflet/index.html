@@ -13,9 +13,10 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.css" />
     <style>
         #map { 
-            height: 748px;
-            width:1333px;
+            height: 42.1875vw;
+            width:75vw;
 
+            
 
         }
 
@@ -26,6 +27,8 @@
     <div><h1>Snipes Farm & Recreation Center - Points of Interest</h1></div>
     <div id='map'></div>
     <script>
+
+
         
         var corner1 = L.latLng(40.19841937,	-74.79847274),
          corner2 = L.latLng(40.20003542,-74.79469976),
@@ -47,6 +50,14 @@
             maxBounds
 
         }).fitBounds(maxBounds)
+
+        window.addEventListener('resize', function(event) {
+            //console.log(maxBounds)
+            setTimeout(map.invalidateSize(),2000)
+            map.fitBounds(maxBounds)
+            map.invalidateSize()
+           
+        }, true);
        // map.options.zoomControl = false
 
         // show real map behind image
