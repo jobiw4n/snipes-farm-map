@@ -53,7 +53,8 @@
 
         window.addEventListener('resize', function(event) {
             //console.log(maxBounds)
-            setTimeout(map.invalidateSize(),2000)
+            setTimeout(()=>{map.fitBounds(maxBounds)
+            map.invalidateSize()},2000)
             map.fitBounds(maxBounds)
             map.invalidateSize()
            
