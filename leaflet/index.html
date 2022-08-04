@@ -9,14 +9,28 @@
     integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
     crossorigin=""></script>
     <script src="leaflet-rotate-master/dist/leaflet-rotate-src.js"></script>
+    <script src="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.css" />
     <style>
-        #map { height: 750px; }
+        #map { 
+            height: 748px;
+            width:1333px;
+
+
+        }
+
+        h3{text-align:center}
     </style>
   </head>
   <body>
     <div><h1>Snipes Farm & Recreation Center - Points of Interest</h1></div>
     <div id='map'></div>
     <script>
+        
+        var corner1 = L.latLng(40.19841937,	-74.79847274),
+         corner2 = L.latLng(40.20003542,-74.79469976),
+         maxBounds = L.latLngBounds(corner1, corner2);
+        
         var map = L.map('map',{
 
             zoomControl:false,
@@ -26,9 +40,14 @@
             scrollWheelZoom:false,
             zoomSnap:0,
             rotate:true,
-            bearing: -30
+            bearing: 0,
+            keyboard:false,
+            touchZoom:false,
+            trackResize:false,
+            maxBounds
 
-        }).setView([40.199244, -74.796412], 18.9);
+        }).fitBounds(maxBounds)
+       // map.options.zoomControl = false
 
         // show real map behind image
         // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -36,17 +55,17 @@
         //     attribution: '© OpenStreetMap'
         // }).addTo(map);
 
-        var ratio = 1.458563535911602
-        var imageUrl = 'backgroundMap.png'
-        imageBounds = [[40.197903, -74.79843], [40.20061655, -74.7943]];
+        
+        var imageUrl = 'backgroundMapUR.png'
+        imageBounds = maxBounds
         L.imageOverlay(imageUrl, imageBounds).addTo(map);
        
         function onMapClick(e) {
             //alert("You clicked the map at " + e.latlng);
             if(e.originalEvent.altKey){
-                navigator.clipboard.writeText([e.latlng.lat,e.latlng.lng])
+                navigator.clipboard.writeText(e.latlng.lat+'	'+e.latlng.lng)
+                console.log('Copied text: '+e.latlng.lat+'	'+e.latlng.lng)
             }
-
         }
 
         map.on('click', onMapClick);
@@ -61,8 +80,9 @@
                 return response.json()
             })
             .then(resData => {
-                console.log(resData)
+                
                 var data=[]
+                var images = []
                 for(var i =1;i<resData.length;i++){
                     data.push({
                     'properties': {
@@ -78,10 +98,16 @@
                         'coordinates': [resData[i][2], resData[i][3]]
                     }
                     })
+                    if (resData[i][5].length>0) {
+                        var img = new Image();
+                        img.src = resData[i][5];
+                        images.push(img)
+                    }
                 }
                 return data
 
             }).then(data=>{
+                var popups = []
                 for (var i=0;i<data.length;i++){
                     var iconSize = [60,60]
                     if(data[i].properties.iconSize == 'small'){
@@ -101,21 +127,58 @@
                 // shadowAnchor: [22, 94]
             });
             var coords = data[i].geometry.coordinates
+
+            if(coords[0].length<1){
+                continue
+            }
             var marker = L.marker([ coords[0],coords[1]],{
                 icon
             }).addTo(map);
 
             const title = `<h3>${data[i].properties.title}</h3>`;
             var image = ''
+            var moreInfo = ''
+            var description = ''
             if(data[i].properties.imageLink.length>0){
                 image = `<div style='text-align:center'><img width=150 src='${data[i].properties.imageLink}'></img><div>`
             }
-            const description = `<p>${data[i].properties.description}</p>`;
-            var html = title+image+description
+            if(data[i].properties.moreInfoText.length>0){
+                moreInfo = `<p><a href="${data[i].properties.moreInfoUrl}">${data[i].properties.moreInfoText}</a></p>`
+            }
+            if(data[i].properties.description.length>0){
+                description = `<p>${data[i].properties.description}</p>`;
+            }
 
-            marker.bindPopup(html)
-        }
+            var html = title+image+description+moreInfo
+            
+            
+            var popup = L.responsivePopup().setContent(html,{
+                //pane:'mapPane',
+                //autoPanPadding:L.point(50, 50),
+                autoPan:false,
+                keepInView:true,
+                maxWidth:300
+            });
+
+            marker.bindPopup(popup)
+
+            //popups.push(marker)
+
+            
+        } 
+        console.log('Retrieved and set '+data.length+' locations.' )
+        //return popups
             })
+            // .then(popups=>{
+            //     for(var i =0;i<popups.length;i++){
+            //         var popup = popups[i].getPopup()
+            //         popup.autoPan = true
+            //         popup.keepInView = true
+            //         console.log(popup)
+            //     }
+
+            //     console.log('Autopan reset to false')
+            // })
             .catch(error => console.log(error))
 
         
