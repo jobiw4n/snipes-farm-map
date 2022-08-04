@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.css" />
     <style>
         #map { 
-            height: 42.1875vw;
+            height: 42.1vw;
             width:75vw;
 
             
@@ -54,7 +54,7 @@
         window.addEventListener('resize', function(event) {
             //console.log(maxBounds)
             setTimeout(()=>{map.fitBounds(maxBounds)
-            map.invalidateSize()},2000)
+            map.invalidateSize()},1000)
             map.fitBounds(maxBounds)
             map.invalidateSize()
            
