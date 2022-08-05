@@ -12,6 +12,7 @@
     <script src="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.css" />
     <style>
+        
         #map { 
             height: 748px;
             width:1333px;
@@ -26,7 +27,9 @@
     <div><h1>Snipes Farm & Recreation Center - Points of Interest</h1></div>
     <div id='map'></div>
     <script>
-        
+
+      
+       
         var corner1 = L.latLng(40.19841937,	-74.79847274),
          corner2 = L.latLng(40.20003542,-74.79469976),
          maxBounds = L.latLngBounds(corner1, corner2);
@@ -48,15 +51,16 @@
 
         }).fitBounds(maxBounds)
        // map.options.zoomControl = false
+       
 
-        // show real map behind image
-        // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //     maxZoom: 20,
-        //     attribution: '© OpenStreetMap'
-        // }).addTo(map);
+    //    // show real map behind image
+    //     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //         maxZoom: 20,
+    //         attribution: '© OpenStreetMap'
+    //     }).addTo(map);
 
         
-        var imageUrl = 'backgroundMapUR.png'
+        var imageUrl = 'snipesBackground.png'
         imageBounds = maxBounds
         L.imageOverlay(imageUrl, imageBounds).addTo(map);
        
@@ -87,12 +91,12 @@
                     data.push({
                     'properties': {
                         'title': resData[i][0],
-                        'description':
-                        resData[i][1],
+                        'description':resData[i][1],
                         iconSize:resData[i][4],
                         'imageLink':resData[i][5],
                         moreInfoText:resData[i][6],
-                        moreInfoUrl:resData[i][7]
+                        moreInfoUrl:resData[i][7],
+                        iconNumber:resData[i][8]
                     },
                     'geometry': {
                         'coordinates': [resData[i][2], resData[i][3]]
@@ -117,7 +121,7 @@
                     }
             
             var icon = L.icon({
-                iconUrl: 'clear.png',
+                iconUrl: 'icons/'+data[i].properties.iconNumber+'.png',
                 iconSize,
             //  iconAnchor: [22, 94],
                 popupAnchor: [0, -25],
@@ -125,7 +129,8 @@
                 // shadowUrl: 'my-icon-shadow.png',
                 // shadowSize: [68, 95],
                 // shadowAnchor: [22, 94]
-            });
+            })//.Label.Default({ labelText: "A label" })
+
             var coords = data[i].geometry.coordinates
 
             if(coords[0].length<1){
@@ -160,10 +165,65 @@
                 maxWidth:300
             });
 
-            marker.bindPopup(popup)
 
-            //popups.push(marker)
 
+            marker.bindPopup(popup).on("popupopen", function(event){
+                //this will be fired only for this specific popup of marker1 .
+                event.popup._source.getTooltip().setOpacity(0);
+            }).on("popupclose", function(event){
+                //this will be fired only for this specific popup of marker1 .
+                event.popup._source.getTooltip().setOpacity(.9);
+            }).on('mouseover',function(ev) {
+                var mousedMarker = ev.target
+            
+                map.eachLayer(function (layer) { 
+                    if (layer.options.icon) {
+                        layer.setOpacity(0.4)
+                    }   
+                });
+                mousedMarker.setOpacity(1)
+                var popupOpen = false
+                var openLayer
+                map.eachLayer(function(layer){
+                
+                    if(layer.isPopupOpen()){
+                        popupOpen = true
+                        openLayer = layer
+                       // console.log(layer)
+
+                    }
+                })
+                if(popupOpen){openLayer.setOpacity(1)}
+            }).on('mouseout',function(){
+                var popupOpen = false
+                var openLayer
+                map.eachLayer(function(layer){
+                
+                    if(layer.isPopupOpen()){
+                        popupOpen = true
+                        openLayer = layer
+
+                    }
+                })
+                if(!popupOpen){
+                
+                    map.eachLayer(function (layer) { 
+                        if (layer.options.icon) {
+                            layer.setOpacity(1)
+                        }   
+                    });
+                } else {
+                    map.eachLayer(function (layer) { 
+                        if (layer.options.icon) {
+                            layer.setOpacity(.4)
+                        }   
+                    });
+                    openLayer.setOpacity(1)
+
+                }
+
+            });
+            marker.bindTooltip(data[i].properties.title)
             
         } 
         console.log('Retrieved and set '+data.length+' locations.' )
@@ -181,11 +241,16 @@
             // })
             .catch(error => console.log(error))
 
+            map.on('popupclose',function(event){
+                map.eachLayer(function (layer) { 
+                        if (layer.options.icon) {
+                            layer.setOpacity(1)
+                        }   
+                    });
+            })
         
-
         
-        
-        
+        var flaticonAttribution = '<div>Icons made by <a href="https://www.flaticon.com/authors/roundicons-premium" title="Roundicons Premium">Roundicons Premium</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/maxicons" title="max.icons">max.icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/flat-icons" title="Flat Icons">Flat Icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/umeicon" title="Umeicon">Umeicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/justicon" title="justicon">justicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smashingstocks" title="smashingstocks">smashingstocks</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/amonrat-rungreangfangsai" title="amonrat rungreangfangsai">amonrat rungreangfangsai</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/noomtah" title="noomtah">noomtah</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/culmbio" title="Culmbio">Culmbio</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/chehuna" title="chehuna">chehuna</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>'
  </script>
         
   </body>
