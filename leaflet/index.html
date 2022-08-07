@@ -14,7 +14,10 @@
     <style>
         #map { 
             height:47.8vw;
+            min-width: 500px;
+            min-height: 281px;
             width:85vw;
+            
 
             
 
@@ -54,6 +57,7 @@
         var defIcon = 50
         var defIconRatio = defIcon/defWidth
         var defPopupWidth = 300
+        var defPopupMinWidth = 150
 
         function debounce(func, time){
             map.fitBounds(maxBounds)
@@ -72,6 +76,9 @@
                 
                 var iconSize = defIcon*(window.innerWidth/defWidth)
                 var popupWidth = defPopupWidth*(window.innerWidth/defWidth)
+                if(popupWidth<defPopupMinWidth){
+                    popupWidth = defPopupMinWidth
+                }
                 if(layer.options.icon){
                     
                     //layer.setIcon() = [iconSize,iconSize]
@@ -217,7 +224,7 @@
                 autoPan:false,
                 keepInView:true,
                 maxWidth:defPopupWidth,
-                minWidth: 150
+                minWidth: 175
             });
 
 
