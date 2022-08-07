@@ -13,8 +13,8 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.css" />
     <style>
         #map { 
-            height:42.1vw;
-            width:75vw;
+            height:47.8vw;
+            width:85vw;
 
             
 
@@ -24,12 +24,11 @@
     </style>
   </head>
   <body>
-    <div><h1>Snipes Farm & Recreation Center - Points of Interest</h1></div>
+    <div><h1>Snipes Farm & Education Center - Points of Interest</h1></div>
     <div id='map'></div>
     <script>
 
 
-        
         var corner1 = L.latLng(40.19841937,	-74.79847274),
          corner2 = L.latLng(40.20003542,-74.79469976),
          maxBounds = L.latLngBounds(corner1, corner2);
@@ -51,14 +50,58 @@
 
         }).fitBounds(maxBounds)
 
-        window.addEventListener('resize', function(event) {
-            //console.log(maxBounds)
-            setTimeout(()=>{map.fitBounds(maxBounds)
-            map.invalidateSize()},1000)
+        var defWidth = 1512
+        var defIcon = 50
+        var defIconRatio = defIcon/defWidth
+
+
+
+        // window.addEventListener('resize', function(event) {
+        //     //console.log(maxBounds)
+            
+        //     map.fitBounds(maxBounds)
+        //     map.invalidateSize()
+
+        // }, true);
+
+        function debounce(func, time){
             map.fitBounds(maxBounds)
             map.invalidateSize()
-           
-        }, true);
+            var time = time || 100; // 100 by default if no param
+            var timer;
+            return function(event){
+                if(timer) clearTimeout(timer);
+                timer = setTimeout(func, time, event);
+            };
+        }
+
+        // Function with stuff to execute
+        function resizeContent() {
+            map.eachLayer(function(layer){
+                
+                var iconSize = defIcon*(window.innerWidth/defWidth)
+                if(layer.options.icon){
+                    
+                    //layer.setIcon() = [iconSize,iconSize]
+                    var icon = layer.getIcon()
+                    var iconRatio = icon.options.iconRatio
+
+                    //get other data from icon somehow? then get multiplier
+                    icon.options.iconSize = [iconRatio*iconSize,iconRatio*iconSize]
+                    layer.setIcon(icon);
+                }
+                
+                map.fitBounds(maxBounds)
+                map.invalidateSize()
+                
+         
+            })
+            // Do loads of stuff once window has resized
+            console.log('resized');
+        }
+
+        // Eventlistener
+        window.addEventListener("resize", debounce( resizeContent, 150 ),true);
        // map.options.zoomControl = false
 
         // show real map behind image
@@ -126,17 +169,19 @@
 
             }).then(data=>{
                 var popups = []
+                var iconRatios = {
+                    small:0.5,
+                    medium:1,
+                    large:1.75
+                }
                 for (var i=0;i<data.length;i++){
-                    var iconSize = [60,60]
-                    if(data[i].properties.iconSize == 'small'){
-                        iconSize = [40,40]
-                    } else if (data[i].properties.iconSize == 'large'){
-                        iconSize = [100,100]
-                    }
+                    var iconRatio = iconRatios[data[i].properties.iconSize]
+                    var iconSize = [iconRatio*defIcon,iconRatio*defIcon]
             
             var icon = L.icon({
                 iconUrl: 'icons/'+data[i].properties.iconNumber+'.png',
                 iconSize,
+                iconRatio,
             //  iconAnchor: [22, 94],
                 popupAnchor: [0, -25],
                 
@@ -262,7 +307,12 @@
                         }   
                     });
             })
-        
+            window.addEventListener('load', (event) => {
+                resizeContent()
+            });
+            document.addEventListener('load',(event)=>{
+                resizeContent()
+            })
         
         var flaticonAttribution = '<div>Icons made by <a href="https://www.flaticon.com/authors/roundicons-premium" title="Roundicons Premium">Roundicons Premium</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/maxicons" title="max.icons">max.icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/flat-icons" title="Flat Icons">Flat Icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/umeicon" title="Umeicon">Umeicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/justicon" title="justicon">justicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smashingstocks" title="smashingstocks">smashingstocks</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/amonrat-rungreangfangsai" title="amonrat rungreangfangsai">amonrat rungreangfangsai</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/noomtah" title="noomtah">noomtah</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/culmbio" title="Culmbio">Culmbio</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/chehuna" title="chehuna">chehuna</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>'
  </script>
