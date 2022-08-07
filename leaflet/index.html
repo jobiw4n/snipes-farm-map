@@ -53,16 +53,7 @@
         var defWidth = 1512
         var defIcon = 50
         var defIconRatio = defIcon/defWidth
-
-
-
-        // window.addEventListener('resize', function(event) {
-        //     //console.log(maxBounds)
-            
-        //     map.fitBounds(maxBounds)
-        //     map.invalidateSize()
-
-        // }, true);
+        var defPopupWidth = 300
 
         function debounce(func, time){
             map.fitBounds(maxBounds)
@@ -80,6 +71,7 @@
             map.eachLayer(function(layer){
                 
                 var iconSize = defIcon*(window.innerWidth/defWidth)
+                var popupWidth = defPopupWidth*(window.innerWidth/defWidth)
                 if(layer.options.icon){
                     
                     //layer.setIcon() = [iconSize,iconSize]
@@ -90,6 +82,22 @@
                     icon.options.iconSize = [iconRatio*iconSize,iconRatio*iconSize]
                     layer.setIcon(icon);
                 }
+
+                if(layer.getPopup()){
+                    //console.log(layer.getPopup())
+                    var popup = layer.getPopup()
+                    popup.options.maxWidth = popupWidth
+                    layer.bindPopup(popup)
+                    // //layer.setIcon() = [iconSize,iconSize]
+                    // var icon = layer.getIcon()
+                    // var iconRatio = icon.options.iconRatio
+
+                    // //get other data from icon somehow? then get multiplier
+                    // icon.options.iconSize = [iconRatio*iconSize,iconRatio*iconSize]
+                    // layer.setIcon(icon);
+                }
+
+
                 
                 map.fitBounds(maxBounds)
                 map.invalidateSize()
@@ -103,19 +111,6 @@
         // Eventlistener
         window.addEventListener("resize", debounce( resizeContent, 150 ),true);
        // map.options.zoomControl = false
-
-        // show real map behind image
-        // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //     maxZoom: 20,
-        //     attribution: '© OpenStreetMap'
-        // }).addTo(map);
-
-    //    // show real map behind image
-    //     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    //         maxZoom: 20,
-    //         attribution: '© OpenStreetMap'
-    //     }).addTo(map);
-
         
         var imageUrl = 'snipesBackground.png'
         imageBounds = maxBounds
@@ -221,7 +216,8 @@
                 //autoPanPadding:L.point(50, 50),
                 autoPan:false,
                 keepInView:true,
-                maxWidth:300
+                maxWidth:defPopupWidth,
+                minWidth: 150
             });
 
 
@@ -287,6 +283,13 @@
         } 
         console.log('Retrieved and set '+data.length+' locations.' )
         //return popups
+        
+            }).then(()=>{
+                console.log('Resetting widths:')
+                resizeContent()
+                
+            }).then(()=>{
+                console.log('Widths reset')
             })
             // .then(popups=>{
             //     for(var i =0;i<popups.length;i++){
