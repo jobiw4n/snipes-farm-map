@@ -33,8 +33,9 @@
         }
 
         li {  
-
-           
+            cursor: pointer;    
+            color: inherit; 
+            text-decoration:inherit;       
         }
         a {
             color: inherit; 
@@ -79,7 +80,7 @@
         }).fitBounds(maxBounds)
 
         var defWidth = 1512
-        var defIcon = 50
+        var defIcon = 60
         var defIconRatio = defIcon/defWidth
         var defPopupWidth = 300
         var defPopupMinWidth = 150
@@ -328,7 +329,7 @@
 
                   //modify TOC HTML
                   //console.log(data[i].properties.title)
-                  var newTOCItem = `<li id='${data[i].properties.title}'><a href="">${data[i].properties.title}</a></li>`
+                  var newTOCItem = `<li id='${data[i].properties.title}'><a onclick="tocFadeIcon(this,'click')" onmouseover="tocFadeIcon(this,'hover')" onmouseout="tocFadeIcon(this,'out')">${data[i].properties.title}</a></li>`
                   tocHTML = tocHTML + newTOCItem
                   
             
@@ -371,6 +372,29 @@
             document.addEventListener('load',(event)=>{
                 resizeContent()
             })
+
+            function tocFadeIcon(htmlElement,outOrHover){
+                var title = htmlElement.innerHTML
+                
+                map.eachLayer(function(layer){
+                    if(layer.getPopup()){                        
+                        
+                        var doc = new DOMParser().parseFromString(layer.getPopup().getContent(), "text/html");
+                        var markerTitle = doc.firstChild.childNodes[1].childNodes[0].innerHTML; // => <a href="#">Link...
+                       // console.log(doc.firstChild.firstChild.innerHTML); // => Link
+
+                        if(markerTitle == title){
+                            //if(clickOrHover == 'hover'){fadeIcons(layer)}
+                            if(outOrHover == 'hover'){layer.openPopup()}
+                            if(outOrHover == 'out'){layer.closePopup()}
+                            
+                            
+                        }
+                        
+                    } 
+                    
+                })
+            }
         
         var flaticonAttribution = '<div>Icons made by <a href="https://www.flaticon.com/authors/roundicons-premium" title="Roundicons Premium">Roundicons Premium</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/maxicons" title="max.icons">max.icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/flat-icons" title="Flat Icons">Flat Icons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/vitaly-gorbachev" title="Vitaly Gorbachev">Vitaly Gorbachev</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/umeicon" title="Umeicon">Umeicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/justicon" title="justicon">justicon</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smashingstocks" title="smashingstocks">smashingstocks</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/amonrat-rungreangfangsai" title="amonrat rungreangfangsai">amonrat rungreangfangsai</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/smalllikeart" title="smalllikeart">smalllikeart</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/noomtah" title="noomtah">noomtah</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/culmbio" title="Culmbio">Culmbio</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div><div>Icons made by <a href="https://www.flaticon.com/authors/chehuna" title="chehuna">chehuna</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>'
  </script>
