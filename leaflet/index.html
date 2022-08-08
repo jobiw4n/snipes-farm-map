@@ -12,25 +12,50 @@
     <script src="leaflet-responsive-popup-master/leaflet.responsive.popup.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.css" />
     <style>
+
         #map { 
-            height:47.8vw;
+            height:42.1vw;
             min-width: 500px;
             min-height: 281px;
-            width:85vw;
+            width:75vw;
             
-
-            
+            left:0px;
+            top:0px
+        }
+        #toc{
+            width:25vw;
+            height:42.1vw;
+            position:absolute;
+            right:0px;
+            top:0px;
+            background:rgb(76, 201, 124);
 
         }
 
-        h3{text-align:center}
+        li {  
+
+           
+        }
+        a {
+            color: inherit; 
+            text-decoration:inherit;
+        }    
+    
+        body{
+            margin:0
+        }
+
+        h3 ,h2 {text-align:center}
     </style>
   </head>
   <body>
-    <div><h1>Snipes Farm & Education Center - Points of Interest</h1></div>
+    
     <div id='map'></div>
+    <div id='toc'>
+        <div><h2>Table of Contents</h2>
+        <ol id='tocItems'></ol></div>
+    </div>
     <script>
-
 
         var corner1 = L.latLng(40.19841937,	-74.79847274),
          corner2 = L.latLng(40.20003542,-74.79469976),
@@ -131,6 +156,57 @@
             }
         }
 
+        function fadeIcons(mousedMarker){
+            map.eachLayer(function (layer) { 
+                    if (layer.options.icon) {
+                        layer.setOpacity(0.4)
+                    }   
+                });
+                mousedMarker.setOpacity(1)
+                var popupOpen = false
+                var openLayer
+                map.eachLayer(function(layer){
+                
+                    if(layer.isPopupOpen()){
+                        popupOpen = true
+                        openLayer = layer
+                       // console.log(layer)
+
+                    }
+                })
+                if(popupOpen){openLayer.setOpacity(1)}
+            
+        }
+
+        function showIcons(){
+            var popupOpen = false
+                var openLayer
+                map.eachLayer(function(layer){
+                
+                    if(layer.isPopupOpen()){
+                        popupOpen = true
+                        openLayer = layer
+
+                    }
+                })
+                if(!popupOpen){ //if no popups, set all to opacity 1
+                
+                    map.eachLayer(function (layer) { 
+                        if (layer.options.icon) {
+                            layer.setOpacity(1)
+                        }   
+                    });
+                } else { // else if there popups, keep only popupped marker visible
+                    map.eachLayer(function (layer) { 
+                        if (layer.options.icon) {
+                            layer.setOpacity(.4)
+                        }   
+                    });
+                    openLayer.setOpacity(1)
+
+                }
+        }
+
         map.on('click', onMapClick);
         
              var apiUrl = 'https://script.google.com/macros/s/AKfycbzek3Z1iuBYBzWG9aigJBAqJblw8KmC1hjxi2w0mjV8oHzpykJnLix-MXMcUUCqZ3_YQA/exec'
@@ -146,6 +222,7 @@
                 
                 var data=[]
                 var images = []
+                
                 for(var i =1;i<resData.length;i++){
                     data.push({
                     'properties': {
@@ -166,7 +243,10 @@
                         img.src = resData[i][5];
                         images.push(img)
                     }
+
+          
                 }
+               
                 return data
 
             }).then(data=>{
@@ -176,6 +256,8 @@
                     medium:1,
                     large:1.75
                 }
+
+                var tocHTML = ''
                 for (var i=0;i<data.length;i++){
                     var iconRatio = iconRatios[data[i].properties.iconSize]
                     var iconSize = [iconRatio*defIcon,iconRatio*defIcon]
@@ -231,63 +313,29 @@
 
             marker.bindPopup(popup).on("popupopen", function(event){
                 //this will be fired only for this specific popup of marker1 .
+                
+                fadeIcons(event.target)
                 event.popup._source.getTooltip().setOpacity(0);
             }).on("popupclose", function(event){
                 //this will be fired only for this specific popup of marker1 .
                 event.popup._source.getTooltip().setOpacity(.9);
             }).on('mouseover',function(ev) {
                 var mousedMarker = ev.target
-            
-                map.eachLayer(function (layer) { 
-                    if (layer.options.icon) {
-                        layer.setOpacity(0.4)
-                    }   
-                });
-                mousedMarker.setOpacity(1)
-                var popupOpen = false
-                var openLayer
-                map.eachLayer(function(layer){
-                
-                    if(layer.isPopupOpen()){
-                        popupOpen = true
-                        openLayer = layer
-                       // console.log(layer)
+                fadeIcons(mousedMarker)
 
-                    }
-                })
-                if(popupOpen){openLayer.setOpacity(1)}
-            }).on('mouseout',function(){
-                var popupOpen = false
-                var openLayer
-                map.eachLayer(function(layer){
-                
-                    if(layer.isPopupOpen()){
-                        popupOpen = true
-                        openLayer = layer
-
-                    }
-                })
-                if(!popupOpen){
-                
-                    map.eachLayer(function (layer) { 
-                        if (layer.options.icon) {
-                            layer.setOpacity(1)
-                        }   
-                    });
-                } else {
-                    map.eachLayer(function (layer) { 
-                        if (layer.options.icon) {
-                            layer.setOpacity(.4)
-                        }   
-                    });
-                    openLayer.setOpacity(1)
-
-                }
-
-            });
+            }).on('mouseout',showIcons);
             marker.bindTooltip(data[i].properties.title)
+
+                  //modify TOC HTML
+                  //console.log(data[i].properties.title)
+                  var newTOCItem = `<li id='${data[i].properties.title}'><a href="">${data[i].properties.title}</a></li>`
+                  tocHTML = tocHTML + newTOCItem
+                  
             
         } 
+        //add TOC HTML to dom
+        //console.log(tocHTML)
+        document.getElementById('tocItems').innerHTML = tocHTML
         console.log('Retrieved and set '+data.length+' locations.' )
         //return popups
         
