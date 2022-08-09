@@ -15,20 +15,23 @@
 
         #map { 
             height:42.1vw;
-            min-width: 500px;
-            min-height: 281px;
+            min-width: 825px;
+            min-height: 464px;
             width:75vw;
             
             left:0px;
             top:0px
         }
         #toc{
-            width:25vw;
+            width:25.3vw;
             height:42.1vw;
             position:absolute;
             right:0px;
             top:0px;
+            left:825px;
             background:rgb(76, 201, 124);
+            min-width: 275px;
+            min-height:464px;
 
         }
 
@@ -45,6 +48,13 @@
         body{
             margin:0
         }
+
+        ol{    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+    -webkit-column-count: 2;
+    -webkit-column-gap: 20px;
+    column-count: 2;
+    column-gap: 20px;}
 
         h3 ,h2 {text-align:center}
     </style>
@@ -80,6 +90,7 @@
         }).fitBounds(maxBounds)
 
         var defWidth = 1512
+        var defMinscreenWidth = 1100
         var defIcon = 60
         var defIconRatio = defIcon/defWidth
         var defPopupWidth = 300
@@ -98,7 +109,11 @@
 
         // Function with stuff to execute
         function resizeContent() {
+            var mapWidth = document.getElementById('map').offsetWidth-3
+   
+            document.getElementById('toc').style.left = mapWidth+'px'
             map.eachLayer(function(layer){
+                layer.closePopup()
                 
                 var iconSize = defIcon*(window.innerWidth/defWidth)
                 var popupWidth = defPopupWidth*(window.innerWidth/defWidth)
@@ -112,7 +127,11 @@
                     var iconRatio = icon.options.iconRatio
 
                     //get other data from icon somehow? then get multiplier
-                    icon.options.iconSize = [iconRatio*iconSize,iconRatio*iconSize]
+                    var newIconSize = iconRatio*iconSize
+                    if(window.innerWidth<defMinscreenWidth){
+                        newIconSize = iconRatio*defIcon*(defMinscreenWidth/defWidth)
+                    }
+                    icon.options.iconSize = [newIconSize,newIconSize]
                     layer.setIcon(icon);
                 }
 
@@ -329,7 +348,7 @@
 
                   //modify TOC HTML
                   //console.log(data[i].properties.title)
-                  var newTOCItem = `<li id='${data[i].properties.title}'><a onclick="tocFadeIcon(this,'click')" onmouseover="tocFadeIcon(this,'hover')" onmouseout="tocFadeIcon(this,'out')">${data[i].properties.title}</a></li>`
+                  var newTOCItem = `<li id='${data[i].properties.title}'><a onclick="tocFadeIcon(this,'click')" onmouseover="tocFadeIcon(this,'mouseIn')" onmouseout="tocFadeIcon(this,'mouseOut')">${data[i].properties.title}</a></li>`
                   tocHTML = tocHTML + newTOCItem
                   
             
@@ -385,8 +404,16 @@
 
                         if(markerTitle == title){
                             //if(clickOrHover == 'hover'){fadeIcons(layer)}
-                            if(outOrHover == 'hover'){layer.openPopup()}
-                            if(outOrHover == 'out'){layer.closePopup()}
+                            if(outOrHover == 'mouseIn'){
+                                fadeIcons(layer)
+                                layer.toggleTooltip()
+                                
+                            }
+                            if(outOrHover == 'mouseOut'){showIcons()
+                            layer.toggleTooltip()}
+                            if(outOrHover == 'click'){layer.togglePopup()}
+                            //if(outOrHover == 'out'){layer.closePopup()}
+                            
                             
                             
                         }
