@@ -50,24 +50,55 @@
             text-decoration:inherit; 
             padding-right:5px;      
         }
-        a {
+        #toc.a {
             color: inherit; 
             text-decoration:inherit;
         }    
     
         body{
-            margin:0
+            margin:0px
         }
 
-        ol{    -moz-column-count: 2;
-    -moz-column-gap: 20px;
-    -webkit-column-count: 2;
-    -webkit-column-gap: 20px;
-    column-count: 2;
-    column-gap: 20px;
-padding-left:24px}
+        ol{
+            -moz-column-count: 2;
+            -moz-column-gap: 20px;
+            -webkit-column-count: 2;
+            -webkit-column-gap: 20px;
+            column-count: 2;
+            column-gap: 20px;
+            padding-left:24px}
 
-        h3 ,h2 {text-align:center}
+        #map.h3 , h2 {text-align:center;}
+
+   
+
+        #details {
+            width: 843px;
+            background:rgb(132, 223, 167);
+            position:relative;
+            
+            display: inline-block;
+            
+        }
+
+        #detailText {
+          
+
+        }
+
+        #myPopupImage{
+            
+            position:absolute;
+            left:543px;
+            top:0px;
+            width:300px;
+            height:inherit;
+            
+            background-image: '';
+            background-repeat: no-repeat;
+            background-position: 0px 0px;
+            
+        }
     </style>
   </head>
   <body>
@@ -77,7 +108,8 @@ padding-left:24px}
         <div><h2>Table of Contents</h2>
         <ol id='tocItems'></ol></div>
     </div>
-    <script>
+    <div id='details'><div id='detailText'></div><div id="myPopupImage"></div></div>
+    <script>        
 
         var corner1 = L.latLng(40.19841937,	-74.79847274),
          corner2 = L.latLng(40.20003542,-74.79469976),
@@ -101,11 +133,11 @@ padding-left:24px}
         }).fitBounds(maxBounds)
 
 
-        var defWidth = 850
-        var defMinscreenWidth = 850
+        var defWidth = 843
+        var defMinscreenWidth = 843
         var defIcon = 30
         var defIconRatio = defIcon/defWidth
-        var defPopupWidth = 300
+        var defPopupWidth = 200
         var defPopupMinWidth = 150
 
         function debounce(func, time){
@@ -315,12 +347,12 @@ padding-left:24px}
                 icon
             }).addTo(map);
 
-            const title = `<h3>${data[i].properties.title}</h3>`;
+            var title = `<h3>${data[i].properties.title}</h3>`;
             var image = ''
             var moreInfo = ''
             var description = ''
             if(data[i].properties.imageLink.length>0){
-                image = `<div style='text-align:center'><img width=150 src='${data[i].properties.imageLink}'></img><div>`
+                image = `<img style="width:300px" src=${data[i].properties.imageLink}'></img>`
             }
             if(data[i].properties.moreInfoText.length>0){
                 moreInfo = `<p><a href="${data[i].properties.moreInfoUrl}">${data[i].properties.moreInfoText}</a></p>`
@@ -338,17 +370,29 @@ padding-left:24px}
                 autoPan:false,
                 keepInView:true,
                 maxWidth:defPopupWidth,
-                minWidth: 175
+                minWidth: 175,
+                title
             });
 
 
 
             marker.bindPopup(popup).on("popupopen", function(event){
                 //this will be fired only for this specific popup of marker1 .
+                setDetailHTML(event.popup)
+                
+                var html = event.popup.getContent()
+      
+
+                var doc = new DOMParser().parseFromString(html, "text/html");
+                var title = doc.firstChild.children[1].children[0].outerHTML
+                
+                event.popup.setContent(title)
                 
                 fadeIcons(event.target)
                 event.popup._source.getTooltip().setOpacity(0);
             }).on("popupclose", function(event){
+                setDetailHTML('close')
+                //console.log(event)
                 //this will be fired only for this specific popup of marker1 .
                 event.popup._source.getTooltip().setOpacity(.9);
             }).on('mouseover',function(ev) {
@@ -435,7 +479,42 @@ padding-left:24px}
                 })
             }
         
+       function setDetailHTML(popup){
+        var detailText = document.getElementById('detailText');
+        var details = document.getElementById('details')
+        var image = document.getElementById('myPopupImage')
+        
+        if(popup == 'close'){
+            detailText.innerHTML = ""
+            detailText.style.height='0px'
+            details.style.height= '0px'
        
+        } else {
+            var html = popup.getContent()
+            detailText.innerHTML = html
+            details.style.height= '250px'
+            //console.log(details.children)
+            var imageLink = detailText.children[1].src
+            console.log(imageLink)
+
+                image.style['background-image'] = `url(${imageLink})`
+      
+            
+            
+            
+            detailText.children[0].style['margin-top']='0px'
+            detailText.children[0].style['padding-top']='5px'
+            detailText.children[0].style['padding-left']='5px'
+
+            detailText.innerHTML = ''
+           
+            
+          
+        }
+        
+        
+        return
+       }
  </script>
         
   </body>
