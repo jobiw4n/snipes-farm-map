@@ -77,6 +77,8 @@
             display:none;
             min-height:250px;
             padding:5px;
+            border: 0px solid red;
+            box-sizing: border-box;
             
             /* display: inline-block; */
             
@@ -495,11 +497,10 @@
                 moreInfo = `<p><a href="${data[location].properties.moreInfoUrl}">${data[location].properties.moreInfoText}</a></p>`
             }
             if(data[location].properties.description.length>0){
-                description = `<p>${data[dataPoint].properties.description}</p>`;
+                description = `<p>${data[location].properties.description}</p>`;
             }
-
+            
             var html = title+description+moreInfo
-
         
             detailText.innerHTML = html
 
