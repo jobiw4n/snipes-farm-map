@@ -29,6 +29,7 @@
                         
             left:0px;
             top:0px
+            
         }
         #toc{
             width:213px;
@@ -79,6 +80,7 @@
             padding:5px;
             border: 0px solid red;
             box-sizing: border-box;
+            margin-top:-1px;
             
             /* display: inline-block; */
             
@@ -87,7 +89,10 @@
         #detailText{
             padding-left:5px;
             padding-top:1px;
+            margin-top:-20px;
+            padding-bottom:-20px;
             height:100%;
+            width:375px;
         }
 
         #myPopupImage{           
@@ -309,7 +314,7 @@
                     }
                     if (resData[i][5].length>0) { // tries to preload images?
                         var img = new Image();
-                        img.src = resData[i][5];
+                        img.src = 'images/'+resData[i][5]+'.png';
                         images.push(img)
                     }
 
@@ -482,7 +487,7 @@
         var location = doc.firstChild.children[1].children[0].innerHTML
         var details = data[location] // change data variable 
 
-        console.log(data[location])
+        
         var detailText = document.getElementById('detailText');
 
         var image = document.getElementById('myPopupImage')
@@ -503,10 +508,10 @@
             var html = title+description+moreInfo
         
             detailText.innerHTML = html
-
-            if(data[location].properties.imageLink.length>0){ //set image. no, do other image thing
+            console.log(data[location].properties.imageLink)
+            if(data[location].properties.imageLink>0){ //set image. no, do other image thing
                 //image = `<img style="width:300px" src=${data[dataPoint].properties.imageLink}'></img>`
-                image.style['background-image'] = `url(${data[location].properties.imageLink})`
+                image.style['background-image'] = `url(images/${data[location].properties.imageLink}.png)`
             } else { image.style['background-image']=''}
         
         return
