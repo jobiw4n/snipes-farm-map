@@ -70,33 +70,35 @@
 
         #map.h3 , h2 {text-align:center;}
 
-   
-
         #details {
             width: 843px;
             background:rgb(132, 223, 167);
             position:relative;
+            display:none;
+            min-height:250px;
+            padding:5px;
             
-            display: inline-block;
+            /* display: inline-block; */
             
         }
 
-        #detailText {
-          
-
+        #detailText{
+            padding-left:5px;
+            padding-top:1px;
+            height:100%;
         }
 
-        #myPopupImage{
-            
+        #myPopupImage{           
             position:absolute;
-            left:543px;
+            left:443px;
             top:0px;
-            width:300px;
-            height:inherit;
+            width:400px;
+            height:100%;
             
             background-image: '';
             background-repeat: no-repeat;
             background-position: 0px 0px;
+            background-size:contain;
             
         }
     </style>
@@ -272,7 +274,7 @@
         }
 
         map.on('click', onMapClick);
-        
+  var data = {}      
              var apiUrl = 'https://script.google.com/macros/s/AKfycbzek3Z1iuBYBzWG9aigJBAqJblw8KmC1hjxi2w0mjV8oHzpykJnLix-MXMcUUCqZ3_YQA/exec'
             fetch(apiUrl)
             .then(response => {
@@ -284,13 +286,14 @@
             })
             .then(resData => {
                 
-                var data=[]
+                
                 var images = []
                 
                 for(var i =1;i<resData.length;i++){
-                    data.push({
+                    var title = resData[i][0]
+                    data[title] = {
                     'properties': {
-                        'title': resData[i][0],
+                        title,
                         'description':resData[i][1],
                         iconSize:resData[i][4],
                         'imageLink':resData[i][5],
@@ -301,8 +304,8 @@
                     'geometry': {
                         'coordinates': [resData[i][2], resData[i][3]]
                     }
-                    })
-                    if (resData[i][5].length>0) {
+                    }
+                    if (resData[i][5].length>0) { // tries to preload images?
                         var img = new Image();
                         img.src = resData[i][5];
                         images.push(img)
@@ -314,7 +317,7 @@
                 return data
 
             }).then(data=>{
-                var popups = []
+                //var popups = []
                 var iconRatios = {
                     small:0.5,
                     medium:1,
@@ -322,93 +325,86 @@
                 }
 
                 var tocHTML = ''
-                for (var i=0;i<data.length;i++){
-                    var iconRatio = iconRatios[data[i].properties.iconSize]
+                for (dataPoint in data){
+                    var iconRatio = iconRatios[data[dataPoint].properties.iconSize]
                     var iconSize = [iconRatio*defIcon,iconRatio*defIcon]
             
-            var icon = L.icon({
-                iconUrl: 'icons/'+data[i].properties.iconNumber+'.png',
-                iconSize,
-                iconRatio,
-            //  iconAnchor: [22, 94],
-                popupAnchor: [0, -25],
-                
-                // shadowUrl: 'my-icon-shadow.png',
-                // shadowSize: [68, 95],
-                // shadowAnchor: [22, 94]
-            })//.Label.Default({ labelText: "A label" })
+                    var icon = L.icon({
+                        iconUrl: 'icons/'+data[dataPoint].properties.iconNumber+'.png',
+                        iconSize,
+                        iconRatio,
+                    //  iconAnchor: [22, 94],
+                        popupAnchor: [0, -25],
+                        
+                        // shadowUrl: 'my-icon-shadow.png',
+                        // shadowSize: [68, 95],
+                        // shadowAnchor: [22, 94]
+                    })//.Label.Default({ labelText: "A label" })
 
-            var coords = data[i].geometry.coordinates
+                    var coords = data[dataPoint].geometry.coordinates
 
-            if(coords[0].length<1){
-                continue
-            }
-            var marker = L.marker([ coords[0],coords[1]],{
-                icon
-            }).addTo(map);
+                    if(coords[0].length<1){
+                        continue
+                    }
+                    var marker = L.marker([ coords[0],coords[1]],{
+                        icon
+                    }).addTo(map);
 
-            var title = `<h3>${data[i].properties.title}</h3>`;
-            var image = ''
-            var moreInfo = ''
-            var description = ''
-            if(data[i].properties.imageLink.length>0){
-                image = `<img style="width:300px" src=${data[i].properties.imageLink}'></img>`
-            }
-            if(data[i].properties.moreInfoText.length>0){
-                moreInfo = `<p><a href="${data[i].properties.moreInfoUrl}">${data[i].properties.moreInfoText}</a></p>`
-            }
-            if(data[i].properties.description.length>0){
-                description = `<p>${data[i].properties.description}</p>`;
-            }
+                    var title = `<h3>${data[dataPoint].properties.title}</h3>`;
 
-            var html = title+image+description+moreInfo
+
+                    var html = title
+                    
+                    
+                    var popup = L.responsivePopup().setContent(html,{
+                        //pane:'mapPane',
+                        //autoPanPadding:L.point(50, 50),
+                        autoPan:false,
+                        keepInView:true,
+                        maxWidth:defPopupWidth,
+                        minWidth: 175,
+                        title
+                    });
+
+
+
+                    marker.bindPopup(popup).on("popupopen", function(event){
+                        //this will be fired only for this specific popup of marker1 .
+                       setDetailHTML(event.popup)
+                        toggleDetails('on')
+                        
+                        
+                        var html = event.popup.getContent()
             
-            
-            var popup = L.responsivePopup().setContent(html,{
-                //pane:'mapPane',
-                //autoPanPadding:L.point(50, 50),
-                autoPan:false,
-                keepInView:true,
-                maxWidth:defPopupWidth,
-                minWidth: 175,
-                title
-            });
 
+                        var doc = new DOMParser().parseFromString(html, "text/html");
+                        var title = doc.firstChild.children[1].children[0].outerHTML
+                        
+                        event.popup.setContent(title)
+                        
+                        fadeIcons(event.target)
+                        event.popup._source.getTooltip().setOpacity(0);
+                    }).on("popupclose", function(event){
+                        
+                        toggleDetails('off')
+                        //console.log(event)
+                        //this will be fired only for this specific popup of marker1 .
+                        event.popup._source.getTooltip().setOpacity(.9);
+                    }).on('mouseover',function(ev) {
+                        var mousedMarker = ev.target
+                        fadeIcons(mousedMarker)
 
+                    }).on('mouseout',showIcons);
 
-            marker.bindPopup(popup).on("popupopen", function(event){
-                //this will be fired only for this specific popup of marker1 .
-                setDetailHTML(event.popup)
-                
-                var html = event.popup.getContent()
-      
+                    marker.bindTooltip(data[dataPoint].properties.title)
 
-                var doc = new DOMParser().parseFromString(html, "text/html");
-                var title = doc.firstChild.children[1].children[0].outerHTML
-                
-                event.popup.setContent(title)
-                
-                fadeIcons(event.target)
-                event.popup._source.getTooltip().setOpacity(0);
-            }).on("popupclose", function(event){
-                setDetailHTML('close')
-                //console.log(event)
-                //this will be fired only for this specific popup of marker1 .
-                event.popup._source.getTooltip().setOpacity(.9);
-            }).on('mouseover',function(ev) {
-                var mousedMarker = ev.target
-                fadeIcons(mousedMarker)
-
-            }).on('mouseout',showIcons);
-            marker.bindTooltip(data[i].properties.title)
-
-                  //modify TOC HTML
-                  //console.log(data[i].properties.title)
-                  var newTOCItem = `<li id='${data[i].properties.title}'><a onclick="tocFadeIcon(this,'click')" onmouseover="tocFadeIcon(this,'mouseIn')" onmouseout="tocFadeIcon(this,'mouseOut')">${data[i].properties.title}</a></li>`
-                  tocHTML = tocHTML + newTOCItem
-                  
-            
-        } 
+                        //modify TOC HTML
+                        
+                        var newTOCItem = `<li id='${data[dataPoint].properties.title}'><a onclick="tocFadeIcon(this,'click')" onmouseover="tocFadeIcon(this,'mouseIn')" onmouseout="tocFadeIcon(this,'mouseOut')">${data[dataPoint].properties.title}</a></li>`
+                        tocHTML = tocHTML + newTOCItem
+                        
+                    
+                } 
         //add TOC HTML to dom
         //console.log(tocHTML)
         document.getElementById('tocItems').innerHTML = tocHTML
@@ -480,40 +476,48 @@
             }
         
        function setDetailHTML(popup){
+        var doc = new DOMParser().parseFromString(popup.getContent(), "text/html")
+        var location = doc.firstChild.children[1].children[0].innerHTML
+        var details = data[location] // change data variable 
+
+        console.log(data[location])
         var detailText = document.getElementById('detailText');
-        var details = document.getElementById('details')
+
         var image = document.getElementById('myPopupImage')
+
+            var title = `<h3>${location}</h3>`;
+            
+            var imageLink = ''
+            var moreInfo = ''
+            var description = ''
+
+            if(data[location].properties.moreInfoText.length>0){
+                moreInfo = `<p><a href="${data[location].properties.moreInfoUrl}">${data[location].properties.moreInfoText}</a></p>`
+            }
+            if(data[location].properties.description.length>0){
+                description = `<p>${data[dataPoint].properties.description}</p>`;
+            }
+
+            var html = title+description+moreInfo
+
         
-        if(popup == 'close'){
-            detailText.innerHTML = ""
-            detailText.style.height='0px'
-            details.style.height= '0px'
-       
-        } else {
-            var html = popup.getContent()
             detailText.innerHTML = html
-            details.style.height= '250px'
-            //console.log(details.children)
-            var imageLink = detailText.children[1].src
-            console.log(imageLink)
 
-                image.style['background-image'] = `url(${imageLink})`
-      
-            
-            
-            
-            detailText.children[0].style['margin-top']='0px'
-            detailText.children[0].style['padding-top']='5px'
-            detailText.children[0].style['padding-left']='5px'
-
-            detailText.innerHTML = ''
-           
-            
-          
-        }
-        
+            if(data[location].properties.imageLink.length>0){ //set image. no, do other image thing
+                //image = `<img style="width:300px" src=${data[dataPoint].properties.imageLink}'></img>`
+                image.style['background-image'] = `url(${data[location].properties.imageLink})`
+            } else { image.style['background-image']=''}
         
         return
+       }
+
+       function toggleDetails(onOff){
+            var detail = document.getElementById('details')
+            if(onOff == 'on' ){
+                detail.style.display = "block"
+            } else {
+                detail.style.display = "none"
+            }
        }
  </script>
         
