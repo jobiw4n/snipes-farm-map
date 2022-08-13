@@ -55,6 +55,10 @@
             color: inherit; 
             text-decoration:inherit;
         }    
+
+        #toc a:hover {
+            background-color:rgb(43, 117, 71);
+        }
     
         body{
             margin:0px
@@ -407,23 +411,27 @@
                     marker.bindPopup(popup).on("popupopen", function(event){
                         //this will be fired only for this specific popup of marker1 .
                        setDetailHTML(event.popup)
-                        toggleDetails('on')
                         
+                        //add toc text highlight
                         
                         var html = event.popup.getContent()
             
 
                         var doc = new DOMParser().parseFromString(html, "text/html");
-                        var title = doc.firstChild.children[1].children[0].outerHTML
+                        var title = doc.firstChild.children[1].children[0]
+                        toggleDetails('on',title.innerHTML)
                         
-                        event.popup.setContent(title)
+                        event.popup.setContent(title.outerHTML)
                         
                         fadeIcons(event.target)
                         event.popup._source.getTooltip().setOpacity(0);
                     }).on("popupclose", function(event){
+                        var doc = new DOMParser().parseFromString(event.popup.getContent(), "text/html");
+                        var title = doc.firstChild.children[1].children[0]
                         
-                        toggleDetails('off')
-                        //console.log(event)
+                        toggleDetails('off',title.innerHTML)
+                        //remove toc texthighlight
+
                         //this will be fired only for this specific popup of marker1 .
                         event.popup._source.getTooltip().setOpacity(.9);
                     }).on('mouseover',function(ev) {
@@ -497,9 +505,12 @@
                                 layer.toggleTooltip()
                                 
                             }
-                            if(outOrHover == 'mouseOut'){showIcons()
-                            layer.toggleTooltip()}
-                            if(outOrHover == 'click'){layer.togglePopup()}
+                            if(outOrHover == 'mouseOut'){
+                                showIcons()
+                                layer.toggleTooltip()}
+                            if(outOrHover == 'click'){
+                                layer.togglePopup()
+                            }
                             //if(outOrHover == 'out'){layer.closePopup()}
                             
                             
@@ -546,12 +557,38 @@
         return
        }
 
-       function toggleDetails(onOff){
+       function tocHighlighting(onOff,title){
+            var toc = document.getElementById('toc')
+            var titlesElements = toc.children[0].children[1].children
+
+            for(var i=0;i<titlesElements.length;i++){
+
+                var listA = titlesElements[i].firstChild
+                console.log(listA.innerHTML +':' +title)
+                if(listA.innerHTML == title){
+                    if(onOff == 'on'){
+                        listA.style['background-color'] = 'rgb(43, 117, 71)'
+                        console.log('on '+title)
+                    } else {
+                        listA.style['background-color'] = 'transparent'
+                        console.log('off '+title)
+                    }
+                }
+
+
+            }
+
+            
+       }
+
+       function toggleDetails(onOff,title){
             var detail = document.getElementById('details')
+            tocHighlighting(onOff,title)
             if(onOff == 'on' ){
                 fadeIn()
                 stillClose = false
                 //detail.style.display = "block"
+
             } else {
                 fadeOut()
                 stillClose = true
