@@ -45,6 +45,9 @@
 
 
         }
+        .label {
+            color:white
+        }
 
         li {  
             cursor: pointer;    
@@ -407,9 +410,27 @@
                     if(coords[0].length<1){
                         continue
                     }
+                    
                     var marker = L.marker([ coords[0],coords[1]],{
                         icon
                     }).addTo(map);
+
+                    var latLng = L.latLng([coords[0],coords[1]]);
+
+                    var point = map.latLngToContainerPoint(latLng);
+
+                    var labelOffset={x:-8*iconRatio,y:15*iconRatio}
+                    var newPoint = L.point([point.x +labelOffset.x, point.y +labelOffset.y]);
+
+                    var newLatLng = map.containerPointToLatLng(newPoint);
+
+                    var label = L.marker(newLatLng,{icon:L.divIcon({
+                        iconSize:null,
+                        className:'label',
+                        html:`<div>${data[dataPoint].properties.iconNumber}</div>`
+                    })
+
+                    }).addTo(map)
 
                     var title = `<h3>${data[dataPoint].properties.title}</h3>`;
 
