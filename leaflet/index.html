@@ -81,6 +81,9 @@
             border: 0px solid red;
             box-sizing: border-box;
             margin-top:-1px;
+            animation-duration: 2s;
+            /* animation-name:fade-in */
+            
             
             /* display: inline-block; */
             
@@ -106,7 +109,21 @@
             background-repeat: no-repeat;
             background-position: 0px 0px;
             background-size:contain;
-            
+        }
+
+        @keyframes fade-in {
+            0% {opacity: 0}
+            100% {opacity: 1}
+        }
+
+        @keyframes fade-out {
+            0% {opacity: 1}
+            100% {opacity: 0}
+        }
+
+        @keyframes slide-up {
+            0% {transform: translateY(100%)}
+            100% {transform:translateY(0%)}
         }
     </style>
   </head>
@@ -117,8 +134,18 @@
         <div><h2>Table of Contents</h2>
         <ol id='tocItems'></ol></div>
     </div>
-    <div id='details'><div id='detailText'></div><div id="myPopupImage"></div></div>
-    <script>        
+    <div id='details' class="details"><div id='detailText'></div><div id="myPopupImage"></div></div>
+    <script>      
+        function fadeIn(){
+            var details = document.getElementById('details')
+            details.style['animation-name']  = 'fade-in'
+            details.style.display = 'block'
+
+        }  
+
+        function fadeOut(){
+            document.getElementById('details').style['animation-name'] = "fade-out"            
+        }
 
         var corner1 = L.latLng(40.19841937,	-74.79847274),
          corner2 = L.latLng(40.20003542,-74.79469976),
@@ -149,6 +176,7 @@
         var defIconRatio = defIcon/defWidth
         var defPopupWidth = 200
         var defPopupMinWidth = 150
+        var stillClose = false
 
         function debounce(func, time){
             map.fitBounds(maxBounds)
@@ -509,7 +537,7 @@
             var html = title+description+moreInfo
         
             detailText.innerHTML = html
-            console.log(data[location].properties.imageLink)
+            
             if(data[location].properties.imageLink>0){ //set image. no, do other image thing
                 //image = `<img style="width:300px" src=${data[dataPoint].properties.imageLink}'></img>`
                 image.style['background-image'] = `url(images/${data[location].properties.imageLink}.png)`
@@ -521,9 +549,18 @@
        function toggleDetails(onOff){
             var detail = document.getElementById('details')
             if(onOff == 'on' ){
-                detail.style.display = "block"
+                fadeIn()
+                stillClose = false
+                //detail.style.display = "block"
             } else {
-                detail.style.display = "none"
+                fadeOut()
+                stillClose = true
+                setTimeout(() => {
+                    if(stillClose){
+                        detail.style.display = "none"
+                    }
+                }, 2000);
+                
             }
        }
  </script>
