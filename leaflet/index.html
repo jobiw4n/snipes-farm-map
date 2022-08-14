@@ -41,7 +41,8 @@
             background:rgb(76, 201, 124);
             font-size: 12px;
             z-index:5;
-            margin-top:-1px
+            margin-top:-1px;
+            
 
 
 
@@ -54,7 +55,8 @@
             cursor: pointer;    
             color: inherit; 
             text-decoration:inherit; 
-            padding-right:5px;      
+            padding-right:5px;  
+            /* font-size:100%     */
         }
         #toc.a {
             color: inherit; 
@@ -70,14 +72,15 @@
             margin:0px
         }
 
-        ol{
+        #tocItems{
             -moz-column-count: 2;
             -moz-column-gap: 20px;
             -webkit-column-count: 2;
             -webkit-column-gap: 20px;
             column-count: 2;
             column-gap: 20px;
-            padding-left:24px}
+            padding-left:24px;
+        }
 
         #map.h3 , h2 {text-align:center;}
 
@@ -170,6 +173,7 @@
         var defPopupImageLeft = 443
         var defPopupImageWidth = 400
         var defDetailTextWidth = 390
+        var defTOCPaddingLeft = 24
         
         var defPopupWidth = 200
         var defPopupMinWidth = 150
@@ -186,15 +190,19 @@
             var details = document.getElementById('details')
             var detailText = document.getElementById('detailText')
             var myPopupImage = document.getElementById('myPopupImage')
+            var tocItems = document.getElementById('tocItems')
 
-            map.style.width = .75*newWidth+'px'
-            map.style.height = .75*newWidth/1.777777777 + 'px'
+            map.style.width = .73*newWidth+'px'
+            map.style.height = .73*newWidth/1.777777777 + 'px'
 
             defIcon = defIcon*resizeRatio
 
-            toc.style.width = .25*newWidth+'px'
+            toc.style.width = .27*newWidth+'px'
             toc.style.height = map.style.height
             toc.style.left = map.style.width
+            toc.style['font-size'] = 80*resizeRatio+'%'
+            
+            tocItems.style['padding-left'] = defTOCPaddingLeft*resizeRatio+'px'
 
             details.style.width = newWidth+'px'
             details.style['min-height'] = defDetailMinHeight*resizeRatio+'px'
