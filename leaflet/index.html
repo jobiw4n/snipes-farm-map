@@ -478,9 +478,23 @@
                         event.popup._source.getTooltip().setOpacity(.9);
                     }).on('mouseover',function(ev) {
                         var mousedMarker = ev.target
+                        
+                        var doc = new DOMParser().parseFromString(mousedMarker.getPopup().getContent(), "text/html");
+                        var title = doc.firstChild.children[1].children[0].innerHTML
                         fadeIcons(mousedMarker)
+                        
+                        tocHighlighting('on',title)
 
-                    }).on('mouseout',showIcons);
+                    }).on('mouseout',function(ev){
+                        showIcons()
+                        var doc = new DOMParser().parseFromString(ev.target.getPopup().getContent(), "text/html");
+                        var title = doc.firstChild.children[1].children[0].innerHTML
+
+                        tocHighlighting('off',title)
+                    })
+                    //showIcons);
+
+                    
 
                     marker.bindTooltip(data[dataPoint].properties.title)
 
@@ -606,16 +620,16 @@
             for(var i=0;i<titlesElements.length;i++){
 
                 var listA = titlesElements[i].firstChild
-                console.log(listA.innerHTML +':' +title)
+                
                 if(listA.innerHTML == title){
                     if(onOff == 'on'){
                         listA.style['background-color'] = 'rgb(43, 117, 71)'
                         listA.style.color = 'white'
-                        console.log('on '+title)
+                       
                     } else {
                         listA.style['background-color'] = 'transparent'
                         listA.style.color = 'inherit'
-                        console.log('off '+title)
+                        
                     }
                 }
 
