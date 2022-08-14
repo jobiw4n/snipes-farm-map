@@ -465,7 +465,7 @@
 
                     var point = map.latLngToContainerPoint(latLng);
 
-                    var labelOffset={x:-8*iconRatio,y:15*iconRatio*resizeRatio}
+                    var labelOffset={x:-defIcon*iconRatio*.5,y:15*iconRatio*resizeRatio}
                     var newPoint = L.point([point.x +labelOffset.x, point.y +labelOffset.y]);
 
                     var newLatLng = map.containerPointToLatLng(newPoint);
@@ -473,7 +473,7 @@
                     var label = L.marker(newLatLng,{icon:L.divIcon({
                         iconSize:null,
                         className:'label',
-                        html:`<div>${data[dataPoint].properties.iconNumber}</div>`
+                        html:`<div style="width:${defIcon*iconRatio}px;text-align:center">${data[dataPoint].properties.iconNumber}</div>`
                     })
 
                     }).addTo(map)
