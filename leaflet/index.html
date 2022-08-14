@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-responsive-popup@1.0.0/leaflet.responsive.popup.css" />
 
     <style>
-
+        /* 1160 */
         #map { 
             /* height:42.1vw;
             width:75vw;
@@ -41,6 +41,7 @@
             background:rgb(76, 201, 124);
             font-size: 12px;
             z-index:5;
+            margin-top:-1px
 
 
 
@@ -89,7 +90,7 @@
             padding:5px;
             border: 0px solid red;
             box-sizing: border-box;
-            margin-top:-1px;
+            margin-top:-2px;
             animation-duration: 2s;
             z-index:3;
             /* animation-name:fade-in */
@@ -105,7 +106,7 @@
             margin-top:-20px;
             padding-bottom:-20px;
             height:100%;
-            width:375px;
+            width:390px;
         }
 
         #myPopupImage{           
@@ -118,7 +119,7 @@
             background-image: '';
             background-repeat: no-repeat;
             background-position: 0px 0px;
-            background-size:contain;
+            background-size:cover;
         }
 
         @keyframes fade-in {
@@ -161,6 +162,53 @@
     </div>
     <div id='details' class="details"><div id='detailText'></div><div id="myPopupImage"></div></div>
     <script>
+        var defWidth = 843
+        var defMinscreenWidth = 843
+        var defIcon = 30
+
+        var defDetailMinHeight = 250
+        var defPopupImageLeft = 443
+        var defPopupImageWidth = 400
+        var defDetailTextWidth = 390
+        
+        var defPopupWidth = 200
+        var defPopupMinWidth = 150
+        var stillClose = false
+        var resizeRatio = 1
+
+        updateSize(1160) //set new width here
+
+        function updateSize(newWidth){
+            resizeRatio = newWidth/defWidth
+            //map, toc, details, detailText, myPopupImage
+            var map = document.getElementById('map')
+            var toc = document.getElementById('toc')
+            var details = document.getElementById('details')
+            var detailText = document.getElementById('detailText')
+            var myPopupImage = document.getElementById('myPopupImage')
+
+            map.style.width = .75*newWidth+'px'
+            map.style.height = .75*newWidth/1.777777777 + 'px'
+
+            defIcon = defIcon*resizeRatio
+
+            toc.style.width = .25*newWidth+'px'
+            toc.style.height = map.style.height
+            toc.style.left = map.style.width
+
+            details.style.width = newWidth+'px'
+            details.style['min-height'] = defDetailMinHeight*resizeRatio+'px'
+            myPopupImage.style.left = defPopupImageLeft*resizeRatio+'px'
+            myPopupImage.style.width = defPopupImageWidth*resizeRatio+'px'
+            detailText.style.width = defDetailTextWidth*resizeRatio+'px'
+            
+
+
+        }
+
+ 
+
+        var defIconRatio = defIcon/defWidth
 
         var fadeOrSlide = 'both'
 
@@ -168,7 +216,6 @@
             var details = document.getElementById('details')
             details.style['animation-name']  = fadeOrSlide+'-in'
             details.style.display = 'block'
-
         }  
 
         function fadeOut(){
@@ -176,8 +223,8 @@
         }
 
         var corner1 = L.latLng(40.19841937,	-74.79847274),
-         corner2 = L.latLng(40.20003542,-74.79469976),
-         maxBounds = L.latLngBounds(corner1, corner2);
+        corner2 = L.latLng(40.20003542,-74.79469976),
+        maxBounds = L.latLngBounds(corner1, corner2);
         
         var map = L.map('map',{
 
@@ -198,13 +245,7 @@
         }).fitBounds(maxBounds)
 
 
-        var defWidth = 843
-        var defMinscreenWidth = 843
-        var defIcon = 30
-        var defIconRatio = defIcon/defWidth
-        var defPopupWidth = 200
-        var defPopupMinWidth = 150
-        var stillClose = false
+
 
         function debounce(func, time){
             map.fitBounds(maxBounds)
@@ -308,7 +349,7 @@
             
         }
 
-        function showIcons(){
+        function showIcons(){ 
             var popupOpen = false
                 var openLayer
                 map.eachLayer(function(layer){
@@ -333,6 +374,11 @@
                         }   
                     });
                     openLayer.setOpacity(1)
+                    var popup = openLayer.getPopup().getContent()
+                    var doc = new DOMParser().parseFromString(popup, "text/html");
+                    var title = doc.firstChild.children[1].children[0].innerHTML
+                    
+                    tocHighlighting('on',title)
 
                 }
         }
@@ -419,7 +465,7 @@
 
                     var point = map.latLngToContainerPoint(latLng);
 
-                    var labelOffset={x:-8*iconRatio,y:15*iconRatio}
+                    var labelOffset={x:-8*iconRatio,y:15*iconRatio*resizeRatio}
                     var newPoint = L.point([point.x +labelOffset.x, point.y +labelOffset.y]);
 
                     var newLatLng = map.containerPointToLatLng(newPoint);
@@ -444,7 +490,7 @@
                         autoPan:false,
                         keepInView:true,
                         maxWidth:defPopupWidth,
-                        minWidth: 175,
+                        minWidth: 100,
                         title
                     });
 
@@ -486,11 +532,12 @@
                         tocHighlighting('on',title)
 
                     }).on('mouseout',function(ev){
-                        showIcons()
+                        
                         var doc = new DOMParser().parseFromString(ev.target.getPopup().getContent(), "text/html");
                         var title = doc.firstChild.children[1].children[0].innerHTML
 
                         tocHighlighting('off',title)
+                        showIcons()
                     })
                     //showIcons);
 
