@@ -181,7 +181,13 @@
         var stillClose = false
         var resizeRatio = 1
 
-        updateSize(1175) //set new width here
+        var newWidth = 1175
+        
+        if(top.location != window.location) {
+            newWidth = top.window[0].innerWidth-20;
+        }
+
+        updateSize(newWidth) //set new width here
 
         function updateSize(newWidth){
             resizeRatio = newWidth/defWidth
