@@ -189,6 +189,12 @@
         if(top.location != window.location) {
             newWidth = top.window[0].innerWidth-20;
         }
+        
+        var minWidth = 800
+
+        if(newWidth <= minWidth){
+            newWidth = minWidth
+        }
 
         updateSize(newWidth) //set new width here
 
