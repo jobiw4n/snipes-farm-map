@@ -170,6 +170,7 @@
     <div id='details' class="details"><div id='detailText'></div><div id="myPopupImage"></div></div>
     <script>
         var defWidth = 843
+        var defHeight = 604
         var defMinscreenWidth = 843
         var defIcon = 30
 
@@ -186,15 +187,28 @@
 
         var newWidth = 1500
         
+
+        var windowWidth = window.innerWidth
+        var windowHeight = window.innerHeight
+
+        
         if(top.location != window.location) {
             newWidth = top.window[0].innerWidth-20;
         }
+
+        var newHeight = newWidth*defHeight/defWidth
         
         var minWidth = 800
+
+        if (newHeight>windowHeight){
+            newWidth = windowHeight*newWidth/newHeight
+        }
 
         if(newWidth <= minWidth){
             newWidth = minWidth
         }
+
+
 
         updateSize(newWidth) //set new width here
 
