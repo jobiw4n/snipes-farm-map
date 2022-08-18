@@ -192,9 +192,7 @@
         var windowHeight = window.innerHeight
 
         
-        if(top.location != window.location) {
-            newWidth = top.window[0].innerWidth-20;
-        }
+     
 
         var newHeight = newWidth*defHeight/defWidth
         
@@ -202,6 +200,10 @@
 
         if (newHeight>windowHeight){
             newWidth = windowHeight*newWidth/newHeight
+        }
+        
+        if(top.location != window.location) {
+            newWidth = top.window[0].innerWidth-20;
         }
 
         if(newWidth <= minWidth){
