@@ -41,7 +41,7 @@
             right:0px;
             top:0px;
             left:630px;
-            background:rgb(76, 201, 124);
+            background:#aecd50;
             font-size: 12px;
             z-index:5;
             margin-top:-1px;
@@ -67,8 +67,9 @@
         }    
 
         #toc a:hover {
-            background-color:rgb(43, 117, 71);
-            color:white
+            background-color:#436631;
+            color:white;
+            border-radius:7px;
         }
     
         body{
@@ -89,7 +90,7 @@
 
         #details {
             width: 843px;
-            background:rgb(107, 220, 150);
+            background:#aecd50;
             position:relative;
             display:none;
             min-height:250px;
@@ -158,6 +159,16 @@
             0% {transform: translateY(0%);opacity: 1}
             100% {transform:translateY(-100%);opacity: 0}
         }
+
+        #toc h2{
+            background:#436631;
+            padding-top:1em;
+            padding-bottom:.5em;
+            margin-top:-.5em;
+            width:100%;
+            color:white
+
+        }
     </style>
   </head>
   <body>
@@ -199,7 +210,7 @@
         var minWidth = 800
 
         if (newHeight>windowHeight){
-            newWidth = windowHeight*newWidth/newHeight
+            newWidth = 0.95*windowHeight*newWidth/newHeight
         }
         
         if(top.location != window.location) {
@@ -666,7 +677,7 @@
         
        function setDetailHTML(popup){
         var doc = new DOMParser().parseFromString(popup.getContent(), "text/html")
-        var location = doc.firstChild.children[1].children[0].innerHTML
+        var location = doc.firstChild.children[1].children[0].textContent
         var details = data[location] // change data variable 
 
         
@@ -679,7 +690,8 @@
             var imageLink = ''
             var moreInfo = ''
             var description = ''
-
+            console.log(location)
+            console.log(data[location])
             if(data[location].properties.moreInfoText.length>0){
                 moreInfo = `<p><a href="${data[location].properties.moreInfoUrl}">${data[location].properties.moreInfoText}</a></p>`
             }
