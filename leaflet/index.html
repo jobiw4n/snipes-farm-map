@@ -214,11 +214,11 @@
 
         var swap = true
 
-        updateSize(newWidth, swap) //set new width here
+        //updateSize(newWidth, swap) //set new width here
 
         function updateSize(newWidth,swap){
             windowHeight = window.innerHeight
-            
+
             if (newHeight>windowHeight){
                 newWidth = 0.95*windowHeight*newWidth/newHeight
             }
@@ -265,6 +265,7 @@
                 map.style.left = toc.style.width
             }
             console.log('Another resize, at: ' + newWidth)
+            map.fitBounds(maxBounds)
         }
 
  
