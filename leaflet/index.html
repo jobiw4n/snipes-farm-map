@@ -271,7 +271,7 @@
                 mapDoc.style.left = toc.style.width
             }
             console.log('Another resize, at: ' + newWidth)
-           // map.fitBounds(maxBounds)
+            
            
         }
 
@@ -637,7 +637,10 @@
                 
                 
             }).then(()=>{
-                setTimeout(()=>{map.fitBounds(maxBounds)},2000)
+                map.fitBounds(maxBounds)
+            map.invalidateSize()
+            map.fitBounds(maxBounds)
+            map.invalidateSize()
             })
             // .then(popups=>{
             //     for(var i =0;i<popups.length;i++){
