@@ -612,7 +612,7 @@
 
                     
 
-                    marker.bindTooltip(data[dataPoint].properties.title)
+                    marker.bindTooltip(data[dataPoint].properties.title,{offset:L.point(15,0)})
 
                         //modify TOC HTML
                         
@@ -638,9 +638,9 @@
                 
             }).then(()=>{
                 map.fitBounds(maxBounds)
-            map.invalidateSize()
-            map.fitBounds(maxBounds)
-            map.invalidateSize()
+                map.invalidateSize()
+                map.fitBounds(maxBounds)
+                map.invalidateSize()
             })
             // .then(popups=>{
             //     for(var i =0;i<popups.length;i++){
