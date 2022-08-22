@@ -212,24 +212,24 @@
         
         var minWidth = 800
 
-        if (newHeight>windowHeight){
-            newWidth = 0.95*windowHeight*newWidth/newHeight
-        }
-        
-        if(top.location != window.location) {
-            newWidth = top.window[0].innerWidth-20;
-        }
-
-        if(newWidth <= minWidth){
-            newWidth = minWidth
-        }
-
-
         var swap = true
 
         updateSize(newWidth, swap) //set new width here
 
         function updateSize(newWidth,swap){
+            windowHeight = window.innerHeight
+            
+            if (newHeight>windowHeight){
+                newWidth = 0.95*windowHeight*newWidth/newHeight
+            }
+            
+            if(top.location != window.location) {
+                newWidth = top.window[0].innerWidth-20;
+            }
+
+            if(newWidth <= minWidth){
+                newWidth = minWidth
+            }
             resizeRatio = newWidth/defWidth
             //map, toc, details, detailText, myPopupImage
             var map = document.getElementById('map')
