@@ -629,8 +629,10 @@
             }).then(()=>{
                 console.log('Widths reset')
                 updateSize(newWidth, swap)
-                map.invalidateSize()
                 
+                
+            }).then(()=>{
+                setTimeout(()=>{map.fitBounds(maxBounds)},2000)
             })
             // .then(popups=>{
             //     for(var i =0;i<popups.length;i++){
