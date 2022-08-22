@@ -214,7 +214,8 @@
 
         var swap = true
 
-        //updateSize(newWidth, swap) //set new width here
+        updateSize(newWidth, swap) //set new width here
+
 
         function updateSize(newWidth,swap){
             windowHeight = window.innerHeight
@@ -232,7 +233,7 @@
             }
             resizeRatio = newWidth/defWidth
             //map, toc, details, detailText, myPopupImage
-            var map = document.getElementById('map')
+            var mapDoc = document.getElementById('map')
             var toc = document.getElementById('toc')
             var details = document.getElementById('details')
             var detailText = document.getElementById('detailText')
@@ -240,21 +241,21 @@
             var tocItems = document.getElementById('tocItems')
 
 
-            map.style.width = .73*newWidth+'px'
-            map.style.height = .73*newWidth/1.777777777 + 'px'
+            mapDoc.style.width = .73*newWidth+'px'
+            mapDoc.style.height = .73*newWidth/1.777777777 + 'px'
 
             defIcon = defIcon*resizeRatio
 
             toc.style.width = .27*newWidth+'px'
-            toc.style.height = map.style.height
-            toc.style.left = map.style.width
+            toc.style.height = mapDoc.style.height
+            toc.style.left = mapDoc.style.width
             toc.style['font-size'] = 80*resizeRatio+'%'
             
             tocItems.style['padding-left'] = defTOCPaddingLeft*resizeRatio+'px'
 
             details.style.width = newWidth+'px'
             details.style['min-height'] = defDetailMinHeight*resizeRatio+'px'
-            details.style.top = map.style.height
+            details.style.top = mapDoc.style.height
             myPopupImage.style.left = defPopupImageLeft*resizeRatio+'px'
             myPopupImage.style.width = defPopupImageWidth*resizeRatio+'px'
             detailText.style.width = defDetailTextWidth*resizeRatio+'px'
@@ -262,10 +263,11 @@
 
             if(swap){
                 toc.style.left = '0px'
-                map.style.left = toc.style.width
+                mapDoc.style.left = toc.style.width
             }
             console.log('Another resize, at: ' + newWidth)
-            map.fitBounds(maxBounds)
+           // map.fitBounds(maxBounds)
+           
         }
 
  
@@ -627,6 +629,8 @@
             }).then(()=>{
                 console.log('Widths reset')
                 updateSize(newWidth, swap)
+                map.invalidateSize()
+                
             })
             // .then(popups=>{
             //     for(var i =0;i<popups.length;i++){
