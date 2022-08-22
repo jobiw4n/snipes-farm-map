@@ -264,7 +264,7 @@
                 toc.style.left = '0px'
                 map.style.left = toc.style.width
             }
-
+            console.log('Another resize')
         }
 
  
@@ -625,6 +625,7 @@
                 
             }).then(()=>{
                 console.log('Widths reset')
+                updateSize(newWidth, swap)
             })
             // .then(popups=>{
             //     for(var i =0;i<popups.length;i++){
