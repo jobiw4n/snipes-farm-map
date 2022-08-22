@@ -178,7 +178,7 @@
     
     <div id='map'></div>
     <div id='toc'>
-        <div><h2>Map Legend</h2>
+        <div><h2 onclick="resize()">Map Legend</h2>
         <ol id='tocItems'></ol></div>
     </div>
     <div id='details' class="details"><div id='detailText'></div><div id="myPopupImage"></div></div>
@@ -213,6 +213,9 @@
         var minWidth = 800
 
         var swap = true
+        function resize(){
+            map.fitBounds(maxBounds)
+        }
 
         updateSize(newWidth, swap) //set new width here
 
