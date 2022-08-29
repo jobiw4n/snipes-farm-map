@@ -61,17 +61,28 @@
             text-decoration:inherit; 
             padding-right:5px;  
             /* font-size:100%     */
+            position:relative
         }
         #toc.a {
             color: inherit; 
             text-decoration:inherit;
+            /* position:relative */
         }    
+
+        .tocHover{
+            background-color:#436631;
+            color:white;
+            border-radius:7px;
+            transition: all ease-in-out 300ms;
+        }
 
         #toc a:hover {
             background-color:#436631;
             color:white;
             border-radius:7px;
+            transition: all ease-in-out 300ms;
         }
+
     
         body{
             margin:0px
@@ -748,12 +759,15 @@
                 
                 if(listA.innerHTML == title){
                     if(onOff == 'on'){
-                        listA.style['background-color'] = 'rgb(43, 117, 71)'
-                        listA.style.color = 'white'
+                        listA.classList.add('tocHover')
+                        
+                        // listA.style['background-color'] = 'rgb(43, 117, 71)'
+                        // listA.style.color = 'white'
                        
                     } else {
-                        listA.style['background-color'] = 'transparent'
-                        listA.style.color = 'inherit'
+                        listA.classList.remove('tocHover')
+                        // listA.style['background-color'] = 'transparent'
+                        // listA.style.color = 'inherit'
                         
                     }
                 }
