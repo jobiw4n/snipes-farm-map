@@ -731,7 +731,7 @@
             console.log(location)
             console.log(data[location])
             if(data[location].properties.moreInfoText.length>0){
-                moreInfo = `<p><a target="_blank" href="${data[location].properties.moreInfoUrl}">${data[location].properties.moreInfoText}</a></p>`
+                moreInfo = `<p><a target="_parent" href="${data[location].properties.moreInfoUrl}">${data[location].properties.moreInfoText}</a></p>`
             }
             if(data[location].properties.description.length>0){
                 description = `<p>${data[location].properties.description}</p>`;
